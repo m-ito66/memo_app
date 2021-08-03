@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <link rel="stylesheet" href="/style.css" >
+  <mata charset="utf-8">
+  <title>edit</title>
+</head>
+<body>
+<header>
+  <nav>
+  <h1>メモアプリ</h1>
+    <ul>
+      <li><a href="/memos">TOP</a>
+      <li><a href="/memos/new">新規メモ</a>
+    </ul>
+  </nav>
+</header>
+<article>
+  <form action="/memos/<%= @id %>" method="POST">
+    <input id="hidden" type="hidden" name="_method" value="patch">
+    <div class="form_items">
+      <div>
+        <input type="text" id="title" name="title" value=<%= @title %>>
+      </div>
+      <div>
+        <textarea id="content" name="content"><%= @content %></textarea>
+      </div>
+    </div>
+    <div class="form_action">
+      <input type='submit' value='変更'>
+    </div>
+  </form>
+</article>
+</body>
+</html>

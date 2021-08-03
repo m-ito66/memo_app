@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <link rel="stylesheet" href="/style.css" >
+  <mata charset="utf-8">
+  <title>sinatra</title>
+</head>
+<body>
+<header>
+  <nav>
+  <h1>メモアプリ</h1>
+    <ul>
+      <li><a href="/memos">TOP</a>
+      <li><a href="/memos/new">新規メモ</a>
+    </ul>
+  </nav>
+</header>
+<article>
+  <form action='/memos' method="POST">
+    <div>
+      <label for='name'>タイトル</label>
+      <input type="text" id="title" name="title">
+    </div>
+    <div>
+      <label for='content'>詳細</label>
+      <textarea id="content" name="content"></textarea>
+    </div>
+    <input type='submit' value='保存'>
+  </form>
+</article>
+</body>
+</html>

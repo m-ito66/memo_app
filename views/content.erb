@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <link rel="stylesheet" href="/style.css" >
+  <mata charset="utf-8">
+  <title>Content</title>
+</head>
+<body>
+<header>
+  <nav>
+  <h1>メモアプリ</h1>
+    <ul>
+      <li><a href="/memos">TOP</a>
+      <li><a href="/memos/new">新規メモ</a>
+    </ul>
+  </nav>
+</header>
+<article>
+  <section class="memo">
+    <h1><%= @title %></h1>
+    <p><%= @content %></p>
+  </section>
+  <seciton class="edit-delete-button">
+    <form class="button" action= "/memos/<%= @id %>/edit" method="GET">
+      <input type="submit" value="編集">
+    </form>
+    <form class="button" action= "/memos/<%= @id %>" method="POST">
+      <input id="hidden" type="hidden" name="_method" value="delete">
+      <input type="submit" value="削除">
+    </form>
+  </section>
+</article>
+</body>
+</html>
