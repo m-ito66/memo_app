@@ -1,10 +1,11 @@
 <article>
   <ul>
-    <% @memo["memos"].each do |memo| %>
-      <% next unless memo["id"] %>
+    <% @memo_array.each do |memo| %>
       <li>
-        <a href= "/memos/<%= memo["id"] %>" ><%= memo["title"] %></a>
+        <a href= "/memos/<%= memo["id"] %>" ><%= memo['title'] %></a>
       </li>
     <% end %>
   </ul>
 </article>
+</body>
+</html>

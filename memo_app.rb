@@ -1,19 +1,70 @@
 # frozen_string_literal: true
 
 require 'erb'
+require 'byebug'
 require 'sinatra'
 require 'sinatra/reloader'
 
+class Memo
+  def initialize(title, content)
+    @id = SecureRandom.hex
+    @title = title
+    @content = content
+  end
+
+  def self.find(id)
+    Dir.glob('db/*') do |json_file|
+      memo = File.open(json_file) { |file| JSON.parse(file.read) }
+      return memo if memo['id'] == id
+    end
+  end
+
+  def to_hash
+    hash = {}
+    instance_variables.each { |var| hash[var.to_s.delete('@')] = instance_variable_get(var) }
+    hash
+  end
+
+  def self.create(title, content)
+    memo = Memo.new(title, content)
+    registar_to_json(memo, memo.id)
+  end
+
+  def self.show_all
+    sorted_files = Dir.glob('db/*').sort_by { |json_file| File.birthtime(json_file) }
+    sorted_files.map do |json_file|
+      File.open(json_file) { |json_data| JSON.parse(json_data.read) }
+    end
+  end
+
+  def self.update(id, title, content)
+    memo = Memo.find(id)
+    memo['title'] = title
+    memo['content'] = content
+    registar_to_json(memo, id)
+  end
+
+  def self.delete(id)
+    Dir.glob('db/*') do |json_file|
+      File.delete(json_file) if json_file == "db/#{id}.json"
+    end
+  end
+end
+
+def registar_to_json(memo, id)
+  memo_hash = memo.to_hash
+  File.open("db/#{id}.json", 'w') do |file|
+    JSON.dump(memo_hash, file)
+  end
+end
+
 get '/memos' do
-  @memo = load_data
+  @memo_array = Memo.show_all
   erb :index
 end
 
 post '/memos' do
-  hash = load_data
-  params['id'] = hash['memos'].count + 1
-  hash['memos'] << escape(params)
-  enter_data(hash)
+  Memo.create(h(params['title']), h(params['content']))
   redirect '/memos'
   erb :index
 end
@@ -23,69 +74,34 @@ get '/memos/new' do
 end
 
 get '/memos/:id' do
-  memos = load_data
-  read_memo_data(memos)
+  @memo = Memo.find(h(params['id']))
   erb :content
 end
 
 get '/memos/:id/edit' do
-  memos = load_data
-  read_memo_data(memos)
+  @memo = Memo.find(h(params['id']))
   erb :edit
 end
 
 patch '/memos/:id' do
-  memos = load_data
-  escaped_params = escape(params)
-  memos['memos'].each do |memo|
-    if memo['id'] == escaped_params['id']
-      memo['title'] = escaped_params['title']
-      memo['content'] = escaped_params['content']
-    end
-  end
-  enter_data(memos)
+  Memo.update(h(params['id']), h(params['title']), h(params['content']))
   redirect '/memos'
   erb :index
 end
 
 delete '/memos/:id' do
-  memos = load_data
-  memos['memos'].each do |memo|
-    memo['id'] = nil if memo['id'] == params['id']
-  end
-  enter_data(memos)
+  Memo.delete(h(params['id']))
   redirect '/memos'
   erb :index
 end
 
+not_found do
+  '404 ファイルが存在しません'
+end
+
 helpers do
   include ERB::Util
-  def escape(params)
-    keys = params.keys
-    values = params.values.map do |value|
-      escape_html(value)
-    end
-    alist = keys.zip(values)
-    Hash[alist]
-  end
-end
-
-def load_data
-  File.open('db/data.json') { |file| JSON.parse(file.read) }
-end
-
-def enter_data(data)
-  File.open('db/data.json', 'w') do |file|
-    JSON.dump(data, file)
-  end
-end
-
-def read_memo_data(memos)
-  memos['memos'].each do |memo|
-    next unless memo['id'] == params['id'].to_s
-
-    @id = memo['id']
-    @title = memo['title']
-    @content = memo['content']
+  def h(value)
+    escape_html(value)
   end
 end

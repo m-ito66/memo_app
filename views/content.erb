@@ -1,13 +1,13 @@
 <article>
   <section class="memo">
-    <h1><%= @title %></h1>
-    <p><%= @content %></p>
+    <h1><%= @memo['title'] %></h1>
+    <p><%= @memo['content'] %></p>
   </section>
   <seciton class="edit-delete-button">
-    <form class="button" action= "/memos/<%= @id %>/edit" method="GET">
+    <form class="button" action= "/memos/<%= @memo['id'] %>/edit" method="GET">
       <input type="submit" value="編集">
     </form>
-    <form class="button" action= "/memos/<%= @id %>" method="POST">
+    <form class="button" action= "/memos/<%= @memo['id'] %>" method="POST">
       <input id="hidden" type="hidden" name="_method" value="delete">
       <input type="submit" value="削除">
     </form>
