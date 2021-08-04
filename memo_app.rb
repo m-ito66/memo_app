@@ -18,12 +18,6 @@ class Memo
     end
   end
 
-  def to_hash
-    hash = {}
-    instance_variables.each { |var| hash[var.to_s.delete('@')] = instance_variable_get(var) }
-    hash
-  end
-
   def self.create(title, content)
     memo = Memo.new(title, content)
     registar_to_json(memo, memo.id)
@@ -48,6 +42,13 @@ class Memo
       File.delete(json_file) if json_file == "db/#{id}.json"
     end
   end
+
+  def to_hash
+    hash = {}
+    instance_variables.each { |var| hash[var.to_s.delete('@')] = instance_variable_get(var) }
+    hash
+  end
+
 end
 
 def registar_to_json(memo, id)
