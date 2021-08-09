@@ -1,7 +1,7 @@
 <article>
   <section class="memo">
-    <h1><%= @memo['title'] %></h1>
-    <p><%= @memo['content'] %></p>
+    <h1><%= h(@memo['title']) %></h1>
+    <p><%= h(@memo['content']) %></p>
   </section>
   <seciton class="edit-delete-button">
     <form class="button" action= "/memos/<%= @memo['id'] %>/edit" method="GET">

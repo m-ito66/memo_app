@@ -2,7 +2,7 @@
   <ul>
     <% @memo_array.each do |memo| %>
       <li>
-        <a href= "/memos/<%= memo["id"] %>" ><%= memo['title'] %></a>
+        <a href="/memos/<%= memo["id"] %>"><%= h(memo['title']) %></a>
       </li>
     <% end %>
   </ul>

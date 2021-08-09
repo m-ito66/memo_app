@@ -5,6 +5,8 @@ require 'sinatra'
 require 'sinatra/reloader'
 
 class Memo
+  attr_reader :id, :title, :content
+
   def initialize(title, content)
     @id = SecureRandom.hex
     @title = title
@@ -20,7 +22,7 @@ class Memo
 
   def self.create(title, content)
     memo = Memo.new(title, content)
-    registar_to_json(memo, memo.id)
+    Memo.save_to_file(memo.id, memo.title, memo.content)
   end
 
   def self.show_all
@@ -34,7 +36,7 @@ class Memo
     memo = Memo.find(id)
     memo['title'] = title
     memo['content'] = content
-    registar_to_json(memo, id)
+    Memo.save_to_file(id, title, content)
   end
 
   def self.delete(id)
@@ -43,18 +45,15 @@ class Memo
     end
   end
 
-  def to_hash
-    hash = {}
-    instance_variables.each { |var| hash[var.to_s.delete('@')] = instance_variable_get(var) }
-    hash
+  def self.to_h(id, title, content)
+    [[:id, id], [:title, title], [:content, content]].to_h
   end
 
-end
-
-def registar_to_json(memo, id)
-  memo_hash = memo.to_hash
-  File.open("db/#{id}.json", 'w') do |file|
-    JSON.dump(memo_hash, file)
+  def self.save_to_file(id, title, content)
+    memo_hash = Memo.to_h(id, title, content)
+    File.open("db/#{id}.json", 'w') do |file|
+      JSON.dump(memo_hash, file)
+    end
   end
 end
 
@@ -64,7 +63,7 @@ get '/memos' do
 end
 
 post '/memos' do
-  Memo.create(h(params['title']), h(params['content']))
+  Memo.create(params['title'], params['content'])
   redirect '/memos'
   erb :index
 end
@@ -74,23 +73,23 @@ get '/memos/new' do
 end
 
 get '/memos/:id' do
-  @memo = Memo.find(h(params['id']))
+  @memo = Memo.find(params['id'])
   erb :content
 end
 
 get '/memos/:id/edit' do
-  @memo = Memo.find(h(params['id']))
+  @memo = Memo.find(params['id'])
   erb :edit
 end
 
 patch '/memos/:id' do
-  Memo.update(h(params['id']), h(params['title']), h(params['content']))
+  Memo.update(params['id'], params['title'], params['content'])
   redirect '/memos'
   erb :index
 end
 
 delete '/memos/:id' do
-  Memo.delete(h(params['id']))
+  Memo.delete(params['id'])
   redirect '/memos'
   erb :index
 end
