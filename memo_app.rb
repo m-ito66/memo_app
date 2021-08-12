@@ -3,9 +3,11 @@
 require 'erb'
 require 'sinatra'
 require 'sinatra/reloader'
+require 'securerandom'
 
 class Memo
-  attr_reader :id, :title, :content
+  attr_accessor :id
+  attr_reader :title, :content
 
   def initialize(title, content)
     @id = SecureRandom.hex
@@ -22,7 +24,7 @@ class Memo
 
   def self.create(title, content)
     memo = Memo.new(title, content)
-    Memo.save_to_file(memo.id, memo.title, memo.content)
+    save_to_file(memo)
   end
 
   def self.show_all
@@ -33,10 +35,9 @@ class Memo
   end
 
   def self.update(id, title, content)
-    memo = Memo.find(id)
-    memo['title'] = title
-    memo['content'] = content
-    Memo.save_to_file(id, title, content)
+    memo = Memo.new(title, content)
+    memo.id = id
+    save_to_file(memo)
   end
 
   def self.delete(id)
@@ -45,13 +46,13 @@ class Memo
     end
   end
 
-  def self.to_h(id, title, content)
-    [[:id, id], [:title, title], [:content, content]].to_h
+  def self.to_h(memo)
+    { id: memo.id, title: memo.title, content: memo.content }
   end
 
-  def self.save_to_file(id, title, content)
-    memo_hash = Memo.to_h(id, title, content)
-    File.open("db/#{id}.json", 'w') do |file|
+  def self.save_to_file(memo)
+    memo_hash = to_h(memo)
+    File.open("db/#{memo.id}.json", 'w') do |file|
       JSON.dump(memo_hash, file)
     end
   end
