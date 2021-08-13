@@ -39,9 +39,8 @@ class Memo
   end
 
   def self.delete(id)
-    Dir.glob('db/*') do |json_file|
-      File.delete(json_file) if json_file == "db/#{id}.json"
-    end
+    json_file = Dir.glob("db/#{id}.json").first
+    File.delete(json_file)
   end
 
   def self.to_h(memo)
