@@ -16,8 +16,7 @@ class Memo
   end
 
   def self.find(id)
-    json_file = Dir.glob("db/#{id}.json").first
-    File.open(json_file) { |file| JSON.parse(file.read) }
+    JSON.parse(File.read("db/#{id}.json"))
   end
 
   def self.create(title, content)
