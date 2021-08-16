@@ -1,0 +1,38 @@
+body {
+  margin: 30px;
+}
+
+header nav h1 {
+  font-size: 40px;
+  display: inline;
+  width: 8%;
+}
+
+nav ul {
+  padding-left: 0;
+  display: inline;
+}
+
+nav li {
+  display: inline;
+}
+
+article {
+  padding-left: 10px;
+  font-size: 20px;
+}
+
+#title, #content {
+  font-size: 20px;
+  line-height: 2.0;
+  margin: 5px 0;
+  width: 300px;
+}
+
+.button {
+  display: inline;
+}
+
+label {
+  display: block;
+}
