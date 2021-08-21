@@ -8,15 +8,15 @@ require 'pg'
 class Memo
   @conn = PG.connect(dbname: 'memo_app')
   def self.find(params)
-    @conn.exec('SELECT * FROM memos WHERE id =$1', [params[:id]]).first
+    @conn.exec('SELECT * FROM memos WHERE id=$1', [params[:id]]).first
   end
 
   def self.create(params)
-    @conn.exec('INSERT INTO memos(title, content) VALUES ($1, $2)', [params[:title], params[:content]])
+    @conn.exec('INSERT INTO memos (title, content) VALUES ($1, $2)', [params[:title], params[:content]])
   end
 
   def self.show_all
-    @conn.exec('SELECT * FROM memos')
+    @conn.exec('SELECT * FROM memos ORDER BY id')
   end
 
   def self.update(params)
