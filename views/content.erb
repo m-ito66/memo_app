@@ -3,7 +3,7 @@
     <h1><%= h(@memo['title']) %></h1>
     <p><%= h(@memo['content']) %></p>
   </section>
-  <seciton class="edit-delete-button">
+  <section class="edit-delete-button">
     <form class="button" action= "/memos/<%= @memo['id'] %>/edit" method="GET">
       <input type="submit" value="編集">
     </form>

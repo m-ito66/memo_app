@@ -8,6 +8,7 @@ GEM
     parallel (1.20.1)
     parser (3.0.2.0)
       ast (~> 2.4.1)
+    pg (1.2.3)
     rack (2.2.3)
     rack-protection (2.1.0)
       rack
@@ -52,6 +53,7 @@ PLATFORMS
   x86_64-darwin-20
 
 DEPENDENCIES
+  pg
   rubocop-fjord
   sinatra
   sinatra-contrib

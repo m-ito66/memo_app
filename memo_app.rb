@@ -3,54 +3,28 @@
 require 'erb'
 require 'sinatra'
 require 'sinatra/reloader'
-require 'securerandom'
+require 'pg'
 
 class Memo
-  attr_accessor :id
-  attr_reader :title, :content
-
-  def initialize(title, content)
-    @id = SecureRandom.hex
-    @title = title
-    @content = content
+  @conn = PG.connect(dbname: 'memo_app')
+  def self.find(params)
+    @conn.exec('SELECT * FROM memos WHERE id=$1', [params[:id]]).first
   end
 
-  def self.find(id)
-    JSON.parse(File.read("db/#{id}.json"))
-  end
-
-  def self.create(title, content)
-    memo = Memo.new(title, content)
-    save_to_file(memo)
+  def self.create(params)
+    @conn.exec('INSERT INTO memos (title, content) VALUES ($1, $2)', [params[:title], params[:content]])
   end
 
   def self.show_all
-    sorted_files = Dir.glob('db/*').sort_by { |json_file| File.birthtime(json_file) }
-    sorted_files.map do |json_file|
-      File.open(json_file) { |json_data| JSON.parse(json_data.read) }
-    end
+    @conn.exec('SELECT * FROM memos ORDER BY id')
   end
 
-  def self.update(id, title, content)
-    memo = Memo.new(title, content)
-    memo.id = id
-    save_to_file(memo)
+  def self.update(params)
+    @conn.exec('UPDATE memos SET title=$1, content=$2 WHERE id=$3', [params[:title], params[:content], params[:id]])
   end
 
-  def self.delete(id)
-    json_file = Dir.glob("db/#{id}.json").first
-    File.delete(json_file)
-  end
-
-  def self.to_h(memo)
-    { id: memo.id, title: memo.title, content: memo.content }
-  end
-
-  def self.save_to_file(memo)
-    memo_hash = to_h(memo)
-    File.open("db/#{memo.id}.json", 'w') do |file|
-      JSON.dump(memo_hash, file)
-    end
+  def self.delete(params)
+    @conn.exec('DELETE FROM memos WHERE id=$1', [params[:id]])
   end
 end
 
@@ -60,7 +34,7 @@ get '/memos' do
 end
 
 post '/memos' do
-  Memo.create(params['title'], params['content'])
+  Memo.create(params)
   redirect '/memos'
   erb :index
 end
@@ -70,23 +44,23 @@ get '/memos/new' do
 end
 
 get '/memos/:id' do
-  @memo = Memo.find(params['id'])
+  @memo = Memo.find(params)
   erb :content
 end
 
 get '/memos/:id/edit' do
-  @memo = Memo.find(params['id'])
+  @memo = Memo.find(params)
   erb :edit
 end
 
 patch '/memos/:id' do
-  Memo.update(params['id'], params['title'], params['content'])
+  Memo.update(params)
   redirect '/memos'
   erb :index
 end
 
 delete '/memos/:id' do
-  Memo.delete(params['id'])
+  Memo.delete(params)
   redirect '/memos'
   erb :index
 end

@@ -17,11 +17,18 @@
 
     ``$ bundle install``
 
-4. アプリの起動
+4. memo_appデータベースの作成、memosテーブルの作成
+
+    postgreSQLでmemo_appデータベースを作成し、memo_appデータベースにmemosテーブルを下記のSQL文で作成します。
+
+    ``memo_app=# create table memos ( id serial, title text, content text, primary key(id) );``
+
+
+5. アプリの起動
 
     ``$ ruby memo_app.rb``
 
-5. ローカル環境でメモアプリを利用できます。
+6. ローカル環境でメモアプリを利用できます。
 
     http://localhost:4567/memos
 
